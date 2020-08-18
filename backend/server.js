@@ -29,8 +29,12 @@ Only put ,passport.authenticate('jwt',{session:false}) for routes that have to b
 const usersRouter=require('./routes/users');
 app.use('/api/users',usersRouter);
 
-const vantageApiRouter=require('./routes/vantage-api');
+const vantageApiRouter=require('./routes/vantage-api.router');
 app.use('/api/protected/vantage-api',passport.authenticate('jwt',{session:false}),vantageApiRouter);
+
+const incomeRouter=require('./routes/income.router');
+app.use('/api/protected/income',passport.authenticate('jwt',{session:false}),incomeRouter);
+
 
 app.listen(port,()=>{
     console.log('Server is running on port: '+port);
