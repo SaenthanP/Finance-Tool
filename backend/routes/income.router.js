@@ -17,10 +17,8 @@ router.get('/getHistory', async (req, res) => {
 });
 
 router.post('/addTransaction', async (req, res) => {
+
     let { transactionName, transactionType,transactionAmount,date } = req.body;
-  
-  
-   
     const newTransaction = new Income({
         userId: req.user._id,
         transactionName,
@@ -41,7 +39,7 @@ router.delete('/deleteTransaction/:id', async (req, res) => {
   
    
       const deletedTransaction = await Income.findByIdAndDelete(transactionToDelete._id);
-      const transactions = await Review.find({userId: req.user._id });
+      const transactions = await Income.find({userId: req.user._id });
       return res.json(transactions);
 });
 

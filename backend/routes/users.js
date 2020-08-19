@@ -4,6 +4,11 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
 
+router.get('/isAuthenticated',passport.authenticate('jwt', {session: false}),(req,res)=>{
+
+    return res.status(200).json(true);
+    });
+
 router.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
