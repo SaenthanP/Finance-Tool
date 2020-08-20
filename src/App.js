@@ -7,7 +7,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 import LandingPage from "./components/landing-page.component";
 import Login from "./components/login.component";
-import Test from "./components/test.component";
+import ExpenseTracker from "./components/expense-tracker.component";
+import Register from "./components/register.component";
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -26,7 +27,6 @@ useEffect(() => {
           setLoggedIn(res);
         })
         .catch(err => {
-     
             localStorage.removeItem('jwt');
         });
     // }
@@ -45,7 +45,9 @@ checkLoggedIn();
         <Switch>
           <Route path="/" exact component={LandingPage} />
           <Route path="/login" exact component={Login} />
-          <Route path="/app" exact component={Test} />
+          <Route path="/register" exact component={Register} />
+
+          <Route path="/app" exact component={ExpenseTracker} />
 
 
         </Switch>
