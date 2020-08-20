@@ -33,7 +33,7 @@ app.use('/api/users',usersRouter);
 const vantageApiRouter=require('./routes/vantage-api.router');
 app.use('/api/protected/vantage-api',passport.authenticate('jwt',{session:false}),vantageApiRouter);
 
-const incomeRouter=require('./routes/income.router');
+const incomeRouter=require('./routes/transaction.router');
 app.use('/api/protected/income',passport.authenticate('jwt',{session:false}),incomeRouter);
 
 
