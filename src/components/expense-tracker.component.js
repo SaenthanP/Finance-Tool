@@ -7,9 +7,9 @@ import '../components/component.css';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import ErrorModal from '../components/error-modal.component';
+import { Doughnut } from 'react-chartjs-2';
 
-
-import { Container, Dropdown, ButtonGroup, DropdownButton, Button, Col, Row,Table } from 'react-bootstrap';
+import { Container, Dropdown, ButtonGroup, DropdownButton, Button, Col, Row, Table } from 'react-bootstrap';
 
 
 export default function ExpenseTracker() {
@@ -47,6 +47,21 @@ export default function ExpenseTracker() {
         }
         checkLoggedIn();
 
+        const readTransactions = async () => {
+            await Axios({
+                method: 'get',
+                url: 'http://localhost:5000/api/protected/income//getHistory',
+                headers: {
+                    'Authorization': localStorage.getItem('jwt'),
+                },
+
+            }).then(res => {
+                setTransactions(res.data);
+            });
+
+        }
+        readTransactions();
+
 
 
     }, []);
@@ -54,6 +69,7 @@ export default function ExpenseTracker() {
     const onSubmit = async (e) => {
         try {
             e.preventDefault();
+            e.target.reset();
 
             await Axios({
                 method: 'post',
@@ -62,12 +78,14 @@ export default function ExpenseTracker() {
                     'Authorization': localStorage.getItem('jwt'),
                 },
                 data: {
-                   transactionTitle,
-                   transactionAmount,
-                   transactionDate,
-                   transactionType
+                    transactionTitle,
+                    transactionAmount,
+                    transactionDate,
+                    transactionType
                 }
             }).then(res => {
+                setTransactions([res.data, ...transactions]);
+
                 // setMovies(res.data);
                 // // setMovieTitle("");
             });
@@ -79,18 +97,71 @@ export default function ExpenseTracker() {
     const onChangeDate = (date) => {
         setTransactionDate(date);
     }
+    const Transactions = (props) => {
+        let amount = props.transaction.transactionAmount;
+        if (props.transaction.transactionType === 'EXPENSE') {
+            amount = "-$" + amount;
+        } else {
+            amount = "$" + amount;
+        }
+        return (
+            <tbody>
+                <tr>
+
+                    <td key={props.transaction._id}>{props.transaction.transactionTitle}</td>
+                    <td  >{props.transaction.transactionType}</td>
+                    <td  >{amount}</td>
+                    <td  >{props.transaction.transactionDate}</td>
+                    <td  >edit | delete</td>
+
+
+
+                </tr>
+
+            </tbody>
+        );
+    }
+    const state = {
+        labels: ['Expense', 'Income'],
+        datasets: [
+            {
+                backgroundColor: [
+                    "#8e5ea2",
+                    "#c45850",
+
+                ],
+
+                data: [65, 59]
+            }
+        ]
+    }
     return (
 
         <Container>
-               <ErrorModal
-                            show={errorModalShow}
-                            onHide={() => setErrorModalShow(false)}
-                            error={error}
-
-                        />
+            <ErrorModal
+                show={errorModalShow}
+                onHide={() => setErrorModalShow(false)}
+                error={error}
+            />
             <Row>
                 <Col xs="12" md="6">
-
+                    <div className="chart">
+                        <Doughnut
+                            data={state}
+                            options={{
+                                title: {
+                                    display: true,
+                                    text: 'Transactions',
+                                    fontSize: 20
+                                },
+                                legend: {
+                                    display: true,
+                                    position: 'top'
+                                },
+                                responsive: true
+                            }}
+                            id="myGraph"/>
+                    </div>
                 </Col>
                 <Col xs="12" md="6">
 
@@ -104,7 +175,7 @@ export default function ExpenseTracker() {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="inputAmount">Amount</label>
-                                    <input type="number" className="form-control" placeholder="Amount" onChange={(e)=>setTransactionAmount(e.target.value)}/>
+                                    <input type="number" className="form-control" step="any" min="0" placeholder="Amount" onChange={(e) => setTransactionAmount(e.target.value)} />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="inputDate">Date</label>
@@ -140,25 +211,26 @@ export default function ExpenseTracker() {
 
             <Row>
                 <Col xs="12" >
-                <Table className="income-table" striped bordered hover>
-                                    <thead>
-                                        <tr>
-                                            <th>Transaction Name</th>
-                                            <th>Transaction Type</th>
+                    <Table className="income-table" striped bordered hover responsive>
+                        <thead>
+                            <tr>
+                                <th>Transaction Name</th>
+                                <th>Transaction Type</th>
 
-                                            <th>Amount</th>
-                                            <th>Date</th>
-                                            <th>Delete/Edit</th>
-
-
-                                        </tr>
-                                    </thead>
+                                <th>Amount</th>
+                                <th>Date</th>
+                                <th>Delete/Edit</th>
 
 
+                            </tr>
+                        </thead>
 
-            </Table>
+                        {transactions.map(currentTransaction => <Transactions transaction={currentTransaction} key={currentTransaction._id} />)}
+
+
+                    </Table>
                 </Col>
-               
+
             </Row>
         </Container>
     );
