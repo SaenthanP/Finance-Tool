@@ -153,6 +153,17 @@ export default function ExpenseTracker() {
     const onChangeDate = (date) => {
         setTransactionDate(date);
     }
+    const deletetransaction = async (id) => {
+        await Axios({
+          method: 'delete',
+          url: 'http://localhost:5000/api/protected/income/deleteTransaction/'+id,
+          headers: {
+            'Authorization': localStorage.getItem('jwt'),
+          },
+        }).then(res => {
+          setTransactions(res.data);
+        });
+      }
     const Transactions = (props) => {
         let amount = props.transaction.transactionAmount;
         if (props.transaction.transactionType === 'EXPENSE') {
@@ -168,7 +179,7 @@ export default function ExpenseTracker() {
                     <td  >{props.transaction.transactionType}</td>
                     <td  >{amount}</td>
                     <td  >{props.transaction.transactionDate}</td>
-                    <td  >edit | delete</td>
+        <td  >edit |<button onClick={()=>deletetransaction(props.transaction._id)}>Delete</button> {}</td>
 
 
 
