@@ -23,6 +23,9 @@ export default function ExpenseTracker() {
     const [error, setError] = useState();
 
     const [errorModalShow, setErrorModalShow] = useState(false);
+    const [expense, setExpense] = useState(0);
+    const [income, setIncome] = useState(0);
+
 
     useEffect(() => {
 
@@ -57,15 +60,64 @@ export default function ExpenseTracker() {
 
             }).then(res => {
                 setTransactions(res.data);
+                // calculateNetworth(res.data);
+
             });
 
         }
         readTransactions();
-
-
-
+        console.log("test");
     }, []);
+    const calculateNetworth =  () => {
+        var incomeTotal=0;
+        var expenseTotal=0;
+        for (var transactionIndex = 0; transactionIndex < transactions.length; transactionIndex++) {
+            if (transactions[transactionIndex].transactionType === 'INCOME') {
+                incomeTotal+= transactions[transactionIndex].transactionAmount;
+                // setIncome(income=>income + transactions[transactionIndex].transactionAmount);
 
+            } else {
+                expenseTotal+= transactions[transactionIndex].transactionAmount;
+
+                // setExpense(expense=>expense + transactions[transactionIndex].transactionAmount)
+
+            }
+        }
+    return(<Doughnut
+        data={{
+            labels: ['Expense', 'Income'],
+            datasets: [
+                {
+                    backgroundColor: [
+                        "#8e5ea2",
+                        "#c45850",
+
+                    ],
+
+                    data: [ expenseTotal,incomeTotal]
+                }
+            ]
+        }}
+        options={{
+            title: {
+                display: true,
+                text: 'Transactions',
+                fontSize: 20
+            },
+            legend: {
+                display: true,
+                position: 'top'
+            },
+            responsive: true,
+            maintainAspectRatio: false,
+        }}
+        id="myGraph"
+        width={400}
+        height={400}
+    />);
+
+
+    }
     const onSubmit = async (e) => {
         try {
             e.preventDefault();
@@ -85,9 +137,13 @@ export default function ExpenseTracker() {
                 }
             }).then(res => {
                 setTransactions([res.data, ...transactions]);
+                calculateNetworth(transactions);
+                setTransactionAmount(undefined);
+                setTransactionTitle(undefined);
+                setTransactionDate(undefined);
+                setTransactionType(undefined);
 
-                // setMovies(res.data);
-                // // setMovieTitle("");
+          
             });
         } catch (err) {
             setError(err.response.data.Error);
@@ -121,20 +177,7 @@ export default function ExpenseTracker() {
             </tbody>
         );
     }
-    const state = {
-        labels: ['Expense', 'Income'],
-        datasets: [
-            {
-                backgroundColor: [
-                    "#8e5ea2",
-                    "#c45850",
 
-                ],
-
-                data: [65, 59]
-            }
-        ]
-    }
     return (
 
         <Container>
@@ -146,21 +189,7 @@ export default function ExpenseTracker() {
             <Row>
                 <Col xs="12" md="6">
                     <div className="chart">
-                        <Doughnut
-                            data={state}
-                            options={{
-                                title: {
-                                    display: true,
-                                    text: 'Transactions',
-                                    fontSize: 20
-                                },
-                                legend: {
-                                    display: true,
-                                    position: 'top'
-                                },
-                                responsive: true
-                            }}
-                            id="myGraph"/>
+                        {calculateNetworth()}
                     </div>
                 </Col>
                 <Col xs="12" md="6">
@@ -178,11 +207,7 @@ export default function ExpenseTracker() {
                                     <input type="number" className="form-control" step="any" min="0" placeholder="Amount" onChange={(e) => setTransactionAmount(e.target.value)} />
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="inputDate">Date</label>
-                                    <div>
-                                        <DatePicker selected={transactionDate} onChange={onChangeDate}
-                                        />
-                                    </div>
+
                                     {[DropdownButton].map((DropdownType, idx) => (
                                         <DropdownType
                                             as={ButtonGroup}
@@ -201,6 +226,16 @@ export default function ExpenseTracker() {
                                     <input type="text" className="form-control" readOnly={true} defaultValue={transactionType} />
 
                                 </div>
+                                <div className="form-group">
+                                    <label htmlFor="inputDate">Date</label>
+                                    <div>
+                                        <DatePicker selected={transactionDate} onChange={onChangeDate}
+                                        />
+                                    </div>
+                                </div>
+
+
+
                                 <button className="btn btn-lg btn-primary btn-block text-uppercase input-expense-btn" type="submit">Submit</button>
 
                             </form>
