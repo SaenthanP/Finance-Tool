@@ -59,6 +59,17 @@ router.delete('/deleteTransaction/:id', async (req, res) => {
   return res.json(transactions);
 });
 
+router.get('/getTransaction/:id', async (req, res) => {
+  const transaction = await Transaction.findOne({ _id: req.params.id });
+  if (!transactionToDelete) {
+    return res.status(400).json({ Error: "Transaction not found" });
+  }
+
+
+ 
+  return res.json(transaction);
+});
+
 router.put('/editTransaction', async (req, res) => {
   let { transactionTitle, transactionType, transactionAmount, transactionDate, _id } = req.body;
 

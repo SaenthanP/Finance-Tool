@@ -7,6 +7,8 @@ import '../components/component.css';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import ErrorModal from '../components/error-modal.component';
+import EditModal from '../components/edit-modal.component';
+
 import { Doughnut } from 'react-chartjs-2';
 
 import { Container, Dropdown, ButtonGroup, DropdownButton, Button, Col, Row, Table } from 'react-bootstrap';
@@ -21,11 +23,12 @@ export default function ExpenseTracker() {
 
     const [transactionType, setTransactionType] = useState();
     const [error, setError] = useState();
+    const [editModalShow, setEditModalShow] = useState(false);
 
     const [errorModalShow, setErrorModalShow] = useState(false);
     const [expense, setExpense] = useState(0);
     const [income, setIncome] = useState(0);
-
+    const[transactionToEdit,setTransactionToEdit]=useState([]);
 
     useEffect(() => {
 
@@ -164,6 +167,10 @@ export default function ExpenseTracker() {
           setTransactions(res.data);
         });
       }
+      const editTransaction=async(transaction)=>{
+          setTransactionToEdit(transaction);
+        setEditModalShow(true);
+      }
     const Transactions = (props) => {
         let amount = props.transaction.transactionAmount;
         if (props.transaction.transactionType === 'EXPENSE') {
@@ -179,7 +186,7 @@ export default function ExpenseTracker() {
                     <td  >{props.transaction.transactionType}</td>
                     <td  >{amount}</td>
                     <td  >{props.transaction.transactionDate}</td>
-        <td  >edit |<button onClick={()=>deletetransaction(props.transaction._id)}>Delete</button> {}</td>
+        <td ><button onClick={()=>editTransaction(props.transaction)}>edit</button>|<button onClick={()=>deletetransaction(props.transaction._id)}>Delete</button> </td>
 
 
 
@@ -192,6 +199,11 @@ export default function ExpenseTracker() {
     return (
 
         <Container>
+              <EditModal
+                show={editModalShow}
+                onHide={() => setEditModalShow(false)}
+               transaction={transactionToEdit}
+            />
             <ErrorModal
                 show={errorModalShow}
                 onHide={() => setErrorModalShow(false)}
