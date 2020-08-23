@@ -3,7 +3,8 @@ import '../components/component.css';
 import { Modal, Button,  Alert } from 'react-bootstrap';
 import { Container, Dropdown, ButtonGroup, DropdownButton,  Col, Row, Table } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
-
+import moment from 'react-moment';
+import Axios from 'axios';
 export default function EditModal(props) {
     const [transactionDate, setTransactionDate] = useState(new Date());
 
@@ -15,6 +16,7 @@ export default function EditModal(props) {
 
     useEffect(() => {
         console.log("leedle");
+
              setTransactionTitle(props.transaction.transactionTitle);
      setTransactionDate(props.transaction.transactionDate);
      setTransactionAmount(props.transaction.transactionAmount);
@@ -23,6 +25,36 @@ export default function EditModal(props) {
 
 
     }, [props.transaction]);
+
+    const onSubmit = async (e) => {
+        try {
+            e.preventDefault();
+            e.target.reset();
+
+            await Axios({
+                method: 'put',
+                url: 'http://localhost:5000/api/protected/income/editTransaction',
+                headers: {
+                    'Authorization': localStorage.getItem('jwt'),
+                },
+                data: {
+                    transactionTitle,
+                    transactionAmount,
+                    transactionDate,
+                    transactionType,
+                    _id:props.transaction._id
+                }
+            }).then(res => {
+               
+            });
+        } catch (err) {
+            // setError(err.response.data.Error);
+            // setErrorModalShow(true);
+        }
+    }
+    const onChangeDate = (date) => {
+        setTransactionDate(date);
+    }
     return (
         <Modal
             {...props}
@@ -33,19 +65,19 @@ export default function EditModal(props) {
             <Modal.Header closeButton>
             </Modal.Header>
             <Modal.Body>
-                {        console.log(props.transaction.transactionTitle)}
+                {        console.log(transactionDate+" yeet")}
 
                    <div className="card expense-input-card">
                         <div className="card-body">
                             <h5 className="card-title text-center">Edit Transaction</h5>
-                            <form  className="form-signin">
+                            <form onSubmit={onSubmit} className="form-signin">
                                 <div className="form-group">
                                     <label htmlFor="inputExpenseTitle">Transaction Title</label>
-                                    <input type="text" className="form-control" value={transactionTitle} onChange={(e) => setTransactionTitle(e.target.value)}/>
+                                    <input type="text" className="form-control" value={transactionTitle||""} onChange={(e) => setTransactionTitle(e.target.value)}/>
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="inputAmount">Amount</label>
-                                    <input type="number" className="form-control" step="any" min="0" value={transactionAmount} onChange={(e) => setTransactionAmount(e.target.value)}/>
+                                    <input type="number" className="form-control" step="any" min="0" value={transactionAmount||0}  onChange={(e) => setTransactionAmount(e.target.value)}/>
                                 </div>
                                 <div className="form-group">
 
@@ -64,13 +96,13 @@ export default function EditModal(props) {
 
                                         </DropdownType>
                                     ))}
-                                    <input type="text" className="form-control" readOnly={true} defaultValue={transactionType}  />
+                                    <input type="text" className="form-control" readOnly={true} defaultValue={transactionType||""} />
 
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="inputDate">Date</label>
                                     <div>
-                                        <DatePicker 
+                                        <DatePicker selected={Date.parse(transactionDate)} onChange={onChangeDate}
                                         />
                                     </div>
                                 </div>

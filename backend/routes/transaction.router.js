@@ -59,30 +59,20 @@ router.delete('/deleteTransaction/:id', async (req, res) => {
   return res.json(transactions);
 });
 
-router.get('/getTransaction/:id', async (req, res) => {
-  const transaction = await Transaction.findOne({ _id: req.params.id });
-  if (!transactionToDelete) {
-    return res.status(400).json({ Error: "Transaction not found" });
-  }
 
-
- 
-  return res.json(transaction);
-});
 
 router.put('/editTransaction', async (req, res) => {
   let { transactionTitle, transactionType, transactionAmount, transactionDate, _id } = req.body;
 
-
-  const updatedTransaction = new Transaction({
-    userId: req.user._id,
-    transactionTitle,
+  // const updatedTransaction = new Transaction({
+  //   userId: req.user._id,
+ 
+  // });
+// console.log(updatedTransaction);
+  await Transaction.updateOne({_id:_id,   transactionTitle,
     transactionType,
     transactionAmount,
-    transactionDate,
-  });
-
-  updatedTransaction.update({ _id: _id })
+    transactionDate })
     .then(transaction => res.json(transaction))
     .catch(err => res.status(400).json({ Error: err }));
 });

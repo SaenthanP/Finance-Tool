@@ -185,7 +185,7 @@ export default function ExpenseTracker() {
                     <td key={props.transaction._id}>{props.transaction.transactionTitle}</td>
                     <td  >{props.transaction.transactionType}</td>
                     <td  >{amount}</td>
-                    <td  >{props.transaction.transactionDate}</td>
+                    <td  >{props.transaction.transactionDate.substring(0,10)}</td>
         <td ><button onClick={()=>editTransaction(props.transaction)}>edit</button>|<button onClick={()=>deletetransaction(props.transaction._id)}>Delete</button> </td>
 
 
