@@ -53,24 +53,26 @@ export default function ExpenseTracker() {
         }
         checkLoggedIn();
 
-        const readTransactions = async () => {
-            await Axios({
-                method: 'get',
-                url: 'http://localhost:5000/api/protected/income//getHistory',
-                headers: {
-                    'Authorization': localStorage.getItem('jwt'),
-                },
-
-            }).then(res => {
-                setTransactions(res.data);
-                // calculateNetworth(res.data);
-
-            });
-
-        }
+      
         readTransactions();
         console.log("test");
     }, []);
+    const readTransactions = async () => {
+        setEditModalShow(false);
+        await Axios({
+            method: 'get',
+            url: 'http://localhost:5000/api/protected/income//getHistory',
+            headers: {
+                'Authorization': localStorage.getItem('jwt'),
+            },
+
+        }).then(res => {
+            setTransactions(res.data);
+            // calculateNetworth(res.data);
+
+        });
+
+    }
     const calculateNetworth =  () => {
         var incomeTotal=0;
         var expenseTotal=0;
@@ -86,7 +88,8 @@ export default function ExpenseTracker() {
 
             }
         }
-    return(<Doughnut
+    return(
+    <Doughnut
         data={{
             labels: ['Expense', 'Income'],
             datasets: [
@@ -201,7 +204,7 @@ export default function ExpenseTracker() {
         <Container>
               <EditModal
                 show={editModalShow}
-                onHide={() => setEditModalShow(false)}
+                onHide={() => readTransactions()}
                transaction={transactionToEdit}
             />
             <ErrorModal

@@ -18,8 +18,7 @@ router.get('/getHistory', async (req, res) => {
 
 router.post('/addTransaction', async (req, res) => {
   try {
-    let { transactionTitle, transactionAmount,transactionDate, transactionType } = req.body;
-    console.log(transactionAmount+" "+transactionTitle+" "+transactionDate+" "+transactionType);
+    let { transactionTitle, transactionAmount, transactionDate, transactionType } = req.body;
     if (!transactionTitle || !transactionType || !transactionAmount || !transactionDate) {
       return res.status(400).json({ Error: "Not all fields have been entered" });
 
@@ -63,21 +62,18 @@ router.delete('/deleteTransaction/:id', async (req, res) => {
 
 router.put('/editTransaction', async (req, res) => {
   let { transactionTitle, transactionType, transactionAmount, transactionDate, _id } = req.body;
-
-  // const updatedTransaction = new Transaction({
-  //   userId: req.user._id,
- 
-  // });
-// console.log(updatedTransaction);
-  await Transaction.updateOne({_id:_id,   transactionTitle,
+  if (!transactionTitle || !transactionType || !transactionAmount || !transactionDate) {
+    return res.status(400).json({ Error: "Not all fields have been entered" });
+  }
+  
+  await Transaction.updateOne({
+    _id: _id, transactionTitle,
     transactionType,
     transactionAmount,
-    transactionDate })
+    transactionDate
+  })
     .then(transaction => res.json(transaction))
     .catch(err => res.status(400).json({ Error: err }));
 });
-
-
-
 
 module.exports = router;

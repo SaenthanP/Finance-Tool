@@ -5,6 +5,7 @@ import { Container, Dropdown, ButtonGroup, DropdownButton,  Col, Row, Table } fr
 import DatePicker from 'react-datepicker';
 import moment from 'react-moment';
 import Axios from 'axios';
+import ErrorModal from './error-modal.component';
 export default function EditModal(props) {
     const [transactionDate, setTransactionDate] = useState(new Date());
 
@@ -13,6 +14,7 @@ export default function EditModal(props) {
 
     const [transactionType, setTransactionType] = useState("");
     const [error, setError] = useState("");
+    const [errorModalShow, setErrorModalShow] = useState();
 
     useEffect(() => {
         console.log("leedle");
@@ -45,11 +47,11 @@ export default function EditModal(props) {
                     _id:props.transaction._id
                 }
             }).then(res => {
-               
+                props.onHide();
             });
         } catch (err) {
-            // setError(err.response.data.Error);
-            // setErrorModalShow(true);
+            setError(err.response.data.Error);
+            setErrorModalShow(true);
         }
     }
     const onChangeDate = (date) => {
@@ -62,11 +64,14 @@ export default function EditModal(props) {
             aria-labelledby="contained-modal-title-vcenter"
             centered
         >
+             <ErrorModal
+                show={errorModalShow}
+                onHide={() => setErrorModalShow(false)}
+                error={error}
+            />
             <Modal.Header closeButton>
             </Modal.Header>
             <Modal.Body>
-                {        console.log(transactionDate+" yeet")}
-
                    <div className="card expense-input-card">
                         <div className="card-body">
                             <h5 className="card-title text-center">Edit Transaction</h5>
