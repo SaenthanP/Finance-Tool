@@ -13,7 +13,8 @@ import { Container, Dropdown, ButtonGroup, DropdownButton, Button, Col, Row, Tab
 export default function CryptoDashboard() {
     const [coinName, setCoinName] = useState();
     const [editModalShow, setEditModalShow] = useState(false);
-
+    const [weeklyHistory, setWeeklyHistory] = useState([]);
+    const [test, setTest] = useState({ x: [], y: [] });
 
     useEffect(() => {
 
@@ -37,15 +38,91 @@ export default function CryptoDashboard() {
 
         }
         checkLoggedIn();
+        getDailyPriceHistory();
 
 
     }, []);
+    const price = {
+        x: [], y: []
+    };
+    const getDailyPriceHistory = async () => {
+        await Axios({
+            method: 'post',
+            url: 'http://localhost:5000/api/protected/vantage-api/getHistory',
+            headers: {
+                'Authorization': localStorage.getItem('jwt'),
+            },
+            data: {
+                "choice": "DAILY",
+                "currencyFrom": "BTC",
+                "currencyTo": "CAD"
+            }
+        }).then(res => {
+            // console.log(res.data);
+            const dailySeries = res.data["Time Series (Digital Currency Daily)"]
+            const series = Object.keys(dailySeries).map(day => {
+                return { day: day, value: dailySeries[day]["1a. open (CAD)"] }
+            });
+            // console.log(series[142]);
+
+       
+           
+        });
+    }
+    const getWeeklyPriceHistory = async () => {
+        await Axios({
+            method: 'post',
+            url: 'http://localhost:5000/api/protected/vantage-api/getHistory',
+            headers: {
+                'Authorization': localStorage.getItem('jwt'),
+            },
+            data: {
+                "choice": "WEEKLY",
+                "currencyFrom": "BTC",
+                "currencyTo": "CAD"
+            }
+        }).then(res => {
+            // console.log(res.data);
+            const weeklySeries = res.data["Time Series (Digital Currency Weekly)"]
+            const series = Object.keys(weeklySeries).map(day => {
+                return { day: day, value: weeklySeries[day]["1a. open (CAD)"] }
+            });
+            console.log(series[142]);
+
+       
+           
+        });
+    }
+    const getMonthlyPriceHistory = async () => {
+        await Axios({
+            method: 'post',
+            url: 'http://localhost:5000/api/protected/vantage-api/getHistory',
+            headers: {
+                'Authorization': localStorage.getItem('jwt'),
+            },
+            data: {
+                "choice": "MONTHLY",
+                "currencyFrom": "BTC",
+                "currencyTo": "CAD"
+            }
+        }).then(res => {
+            // console.log(res.data);
+            const monthlySeries = res.data["Time Series (Digital Currency Monthly)"]
+            const series = Object.keys(monthlySeries).map(day => {
+                return { day: day, value: monthlySeries[day]["1a. open (CAD)"] }
+            });
+            console.log(series[142]);
+
+       
+           
+        });
+    }
     const onSubmit = async (e) => {
 
     }
     const state = {
         labels: ['January', 'February', 'March',
-            'April', 'May','January', 'February', 'March',
+            'April', 'May', 'January', 'February', 'March',
             'April', 'May'],
         datasets: [
             {
@@ -55,7 +132,7 @@ export default function CryptoDashboard() {
                 backgroundColor: 'rgba(75,192,192,1)',
                 borderColor: 'rgba(0,0,0,1)',
                 borderWidth: 2,
-                data: [65, 59, 80, 81, 56,65, 59, 80, 81, 56]
+                data: [65, 59, 80, 81, 56, 65, 59, 80, 81, 56]
             }
         ]
     }
@@ -63,7 +140,7 @@ export default function CryptoDashboard() {
     return (
 
         <Container>
-          
+
             <Row>
                 <Col xs={8}>
                     <div className="form-group">
@@ -76,7 +153,7 @@ export default function CryptoDashboard() {
                 </Col>
             </Row>
             <Row>
-                <Col xs={12} md={4}>
+                <Col xs={12} md={12}>
                     <Line
                         data={state}
                         options={{
@@ -88,13 +165,21 @@ export default function CryptoDashboard() {
                             legend: {
                                 display: false,
 
-                            }
+                            },
+                            responsive: true,
+                            maintainAspectRatio: false,
                         }}
-                        responsive
+                        width={600}
+                        height={600}
+
                     />
                 </Col>
-                <Col xs={12} md={4}>
-                <Line
+
+
+            </Row>
+            <Row>
+                <Col xs={12} md={12}>
+                    <Line
                         data={state}
                         options={{
                             title: {
@@ -105,31 +190,38 @@ export default function CryptoDashboard() {
                             legend: {
                                 display: false,
 
-                            }
-                        }}
-                        responsive
-                    />
-                </Col>
-                <Col xs={12} md={4}>
-                <Line
-                        data={state}
-                        options={{
-                            title: {
-                                display: true,
-                                text: 'Average Rainfall per month',
-                                fontSize: 20
                             },
-                            legend: {
-                                display: false,
-
-                            }
+                            responsive: true,
+                            maintainAspectRatio: false,
                         }}
-                        responsive
-                        // width={800}
-                        // height={800}
+                        width={600}
+                        height={600}
                     />
                 </Col>
             </Row>
+            <Row>
+                <Col xs={12} md={12}>
+                    <Line
+                        data={state}
+                        options={{
+                            title: {
+                                display: true,
+                                text: 'Average Rainfall per month',
+                                fontSize: 20
+                            },
+                            legend: {
+                                display: false,
+
+                            },
+                            responsive: true,
+                            maintainAspectRatio: false,
+                        }}
+                        width={600}
+                        height={600}
+                    />
+                </Col>
+            </Row>
+
         </Container>
     );
 }
