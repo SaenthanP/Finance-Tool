@@ -36,12 +36,15 @@ router.post('/getHistory', async (req, res) => {
     const currencyTo=req.body.currencyTo;
 
   var cacheTimeDifference = Date.now() - cacheTime;
-  if (cacheTime && cacheTimeDifference < 300000) {
-    return res.json(cachedData);
-  }
+  // if (cacheTime && cacheTimeDifference < 300000) {
+  //   return res.json(cachedData);
+  // }
     const apiRes= await axios.get('https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_'+choice+'&symbol='+currencyFrom+'&market='+currencyTo+'&apikey='+process.env.API_KEY)
     .then(res => { return res });
+    if(apiRes.data.Note){
+      return res.status(429).json({ Error: "Too many requests, slow down (one search a minute)"});
 
+    }
   cachedData = apiRes.data;
   cacheTime = Date.now();
 
