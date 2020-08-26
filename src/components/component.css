@@ -15,6 +15,18 @@ div.container-fluid{
 .chart{
     margin-top: 3.5rem;
 }
+.health-index-card,.converter-input-card{
+    /* text-align: left; */
+
+    border: 0;
+    border-radius: .5rem;
+    box-shadow: 5px 6px 13px 0px rgba(0,0,0,0.75);
+}
+
+.healthIndexDescription{
+        text-align: left;
+
+}
 /* canvas{
 
     width:1000px !important;

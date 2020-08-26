@@ -9,18 +9,19 @@ import "react-datepicker/dist/react-datepicker.css";
 import { Line } from 'react-chartjs-2';
 import ErrorModal from '../components/error-modal.component';
 
-import { Container, Dropdown, ButtonGroup, DropdownButton, Button, Col, Row, Table } from 'react-bootstrap';
+import { Container, Dropdown, ButtonGroup, DropdownButton, Button, Col, Row, Table,InputGroup,FormControl } from 'react-bootstrap';
 
 export default function CryptoDashboard() {
     const [searchItem, setSearchItem] = useState("");
 
     const [coinName, setCoinName] = useState("");
-    const [editModalShow, setEditModalShow] = useState(false);
     const [weeklyHistory, setWeeklyHistory] = useState({ x: [], y: [] });
     const [dailyHistory, setDailyHistory] = useState({ x: [], y: [] });
     const [monthlyHistory, setMonthlyHistory] = useState({ x: [], y: [] });
     const [errorModalShow, setErrorModalShow] = useState(false);
     const [error, setError] = useState();
+    const [exchangeRate, setExchangeRate] = useState();
+    const [healthIndex, setHealthIndex] = useState({ fcasRating: "N/A", fcasScore: "N/A", developerScore: "N/A", utilityScore: "N/A", marketMaturityScore: "N/A" });
 
     useEffect(() => {
 
@@ -89,14 +90,14 @@ export default function CryptoDashboard() {
             });
 
         } catch (err) {
-            
+
             // setError(err.response.data.Error);
             // setErrorModalShow(true);
             resetGraphs(err);
 
         }
     }
- 
+
     const getWeeklyPriceHistory = async () => {
         try {
             await Axios({
@@ -189,14 +190,68 @@ export default function CryptoDashboard() {
             resetGraphs(err);
         }
     }
-    const resetGraphs=(err)=>{
+    const resetGraphs = (err) => {
         setCoinName("Invalid Coin");
-        setWeeklyHistory({ x: [], y: [] });
-        setDailyHistory({ x: [], y: [] });
-        setMonthlyHistory({ x: [], y: [] });
+
 
         setError(err.response.data.Error);
         setErrorModalShow(true);
+
+        setDailyHistory({ x: [], y: [] });
+
+        setWeeklyHistory({ x: [], y: [] });
+        setMonthlyHistory({ x: [], y: [] });
+    }
+
+
+    const getHealthIndex = async () => {
+
+        try {
+            await Axios({
+                method: 'post',
+                url: 'http://localhost:5000/api/protected/vantage-api/getCryptoRating',
+                headers: {
+                    'Authorization': localStorage.getItem('jwt'),
+                },
+                data: {
+                    "currencyName": searchItem
+                }
+            }).then(res => {
+                setHealthIndex({
+                    fcasRating: res.data["Crypto Rating (FCAS)"]["3. fcas rating"], fcasScore: res.data["Crypto Rating (FCAS)"]["4. fcas score"],
+                    developerScore: res.data["Crypto Rating (FCAS)"]["5. developer score"], marketMaturityScore: res.data["Crypto Rating (FCAS)"]["6. market maturity score"],
+                    utilityScore: res.data["Crypto Rating (FCAS)"]["7. utility score"]
+                });
+            });
+
+        } catch (err) {
+            // setError(err.response.data.Error);
+            // setErrorModalShow(true);
+            resetGraphs(err);
+        }
+    }
+    const getExchangeRate = async () => {
+        try {
+            await Axios({
+                method: 'post',
+                url: 'http://localhost:5000/api/protected/vantage-api/getExchangeRate',
+                headers: {
+                    'Authorization': localStorage.getItem('jwt'),
+                },
+                data: {
+                    "currencyFrom": searchItem,
+                    "currencyTo": "CAD"
+                }
+            }).then(res => {
+                setExchangeRate(res.data["Realtime Currency Exchange Rate"]["5. Exchange Rate"]);
+                console.log(res.data["Realtime Currency Exchange Rate"]["5. Exchange Rate"]);
+            });
+
+        } catch (err) {
+            // setError(err.response.data.Error);
+            // setErrorModalShow(true);
+            resetGraphs(err);
+        }
     }
     const onSubmit = async (e) => {
         try {
@@ -208,7 +263,8 @@ export default function CryptoDashboard() {
             getDailyPriceHistory();
             getWeeklyPriceHistory();
             getMonthlyPriceHistory();
-
+            getHealthIndex();
+            getExchangeRate();
             setSearchItem("");
         } catch (err) {
             console.log("reach");
@@ -246,13 +302,69 @@ export default function CryptoDashboard() {
             </form>
             <Row>
                 <Col>
+                    <div className="card converter-input-card">
+                        <div className="card-body">
+                            <h5 className="card-title text-center">Currency Conversion</h5>
+                            <form onSubmit={onSubmit} className="form-signin">
+                                <Row>
+                                    <Col xs={12} md={5}>
+                                        <InputGroup className="mb-3">
+                                            <FormControl
+                                                placeholder="Amount"
+                                                aria-label="Amount"
+                                                aria-describedby="Amount"
+                                            />
+                                            <InputGroup.Append>
+                                                <InputGroup.Text id="Amount">BTC</InputGroup.Text>
+                                            </InputGroup.Append>
+                                        </InputGroup>
+                                    </Col>
+                                    <Col xs={12} md={2}>
+                            <Button><img src="https://www.pngrepo.com/png/55685/180/transfer-arrows.png" width="30px"></img></Button>
+                                    </Col>
+                                    <Col xs={12} md={5}>
+                                        <InputGroup className="mb-3">
+                                            <FormControl
+                                                placeholder="Amount"
+                                                aria-label="Amount"
+                                                aria-describedby="Amount"
+                                            />
+                                            <InputGroup.Append>
+                                                <InputGroup.Text id="Amount">CAD</InputGroup.Text>
+                                            </InputGroup.Append>
+                                        </InputGroup>
+                                    </Col>
+                                </Row>
+
+
+
+
+                                <button className="btn btn-lg btn-primary btn-block text-uppercase input-expense-btn" type="submit">Submit</button>
+
+                            </form>
+                        </div>
+                    </div>
                 </Col>
-                <Col>
+                <Col xs={12} md={6}>
+                    <div className="card health-index-card">
+                        <div className="card-body">
+                            <h4 className="card-title text-center">{coinName} Health Index</h4>
+                            <h6>Fcas rating: {healthIndex.fcasRating}</h6>
+                            <h6>Fcas score: {healthIndex.fcasScore}</h6>
+                            <h6>Devloper Score: {healthIndex.developerScore}</h6>
+                            <h6>Market maturity score: {healthIndex.marketMaturityScore}</h6>
+                            <h6>Utility score: {healthIndex.utilityScore}</h6>
+                            <div className="healthIndexDescription">
+                                <p>*All scores out of 1000
+                            </p>
+                            </div>
+                        </div>
+                    </div>
+
                 </Col>
             </Row>
             <Row>
                 <Col xs={12} >
-                    {console.log(coinName+" trte")}
                     <Line
                         data={{
                             labels: dailyHistory.x,
@@ -271,7 +383,7 @@ export default function CryptoDashboard() {
                         options={{
                             title: {
                                 display: true,
-                                text: coinName+' Daily price (past 100 days)',
+                                text: coinName + ' Daily price (past 100 days)',
                                 fontSize: 20
                             },
                             legend: {
@@ -309,7 +421,7 @@ export default function CryptoDashboard() {
                         options={{
                             title: {
                                 display: true,
-                                text:  coinName+' Weekly price (past 100 weeks)',
+                                text: coinName + ' Weekly price (past 100 weeks)',
                                 fontSize: 20
                             },
                             legend: {
@@ -344,7 +456,7 @@ export default function CryptoDashboard() {
                         options={{
                             title: {
                                 display: true,
-                                text:  coinName+' Monthly price',
+                                text: coinName + ' Monthly price',
                                 fontSize: 20
                             },
                             legend: {
