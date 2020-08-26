@@ -12,6 +12,8 @@ import ErrorModal from '../components/error-modal.component';
 import { Container, Dropdown, ButtonGroup, DropdownButton, Button, Col, Row, Table } from 'react-bootstrap';
 
 export default function CryptoDashboard() {
+    const [searchItem, setSearchItem] = useState("");
+
     const [coinName, setCoinName] = useState("");
     const [editModalShow, setEditModalShow] = useState(false);
     const [weeklyHistory, setWeeklyHistory] = useState({ x: [], y: [] });
@@ -48,300 +50,315 @@ export default function CryptoDashboard() {
     }, []);
 
     const getDailyPriceHistory = async () => {
-        try{
-        await Axios({
-            method: 'post',
-            url: 'http://localhost:5000/api/protected/vantage-api/getHistory',
-            headers: {
-                'Authorization': localStorage.getItem('jwt'),
-            },
-            data: {
-                "choice": "DAILY",
-                "currencyFrom": coinName,
-                "currencyTo": "CAD"
-            }
-        }).then(res => {
-            // console.log(res.data);
-            const dailySeries = res.data["Time Series (Digital Currency Daily)"]
-            const series = Object.keys(dailySeries).map(day => {
-                return { day: day, value: dailySeries[day]["4a. close (CAD)"] }
+        try {
+            await Axios({
+                method: 'post',
+                url: 'http://localhost:5000/api/protected/vantage-api/getHistory',
+                headers: {
+                    'Authorization': localStorage.getItem('jwt'),
+                },
+                data: {
+                    "choice": "DAILY",
+                    "currencyFrom": searchItem,
+                    "currencyTo": "CAD"
+                }
+            }).then(res => {
+                // console.log(res.data);
+                const dailySeries = res.data["Time Series (Digital Currency Daily)"]
+                var series = Object.keys(dailySeries).map(day => {
+                    return { day: day, value: dailySeries[day]["4a. close (CAD)"] }
+                });
+
+                var x_axis = [];
+                var y_axis = [];
+                var days;
+                if (series.length < 100) {
+                    days = series.length;
+                } else {
+                    days = 100;
+                }
+                for (var index = 0; index < days; index++) {
+                    x_axis.push(series[index].day);
+                    y_axis.push(series[index].value)
+
+                }
+                x_axis.reverse();
+                y_axis.reverse();
+                setDailyHistory({ x: x_axis, y: y_axis });
+
             });
 
-            var x_axis = [];
-            var y_axis = [];
-            var days;
-            if(series.length<100){
-                days=series.length;
-            }else{
-                days=100;
-            }
-            for (var index = 0; index < days; index++) {
-                x_axis.push(series[index].day);
-                y_axis.push(series[index].value)
+        } catch (err) {
+            
+            // setError(err.response.data.Error);
+            // setErrorModalShow(true);
+            resetGraphs(err);
 
-            }
-            setDailyHistory({ x: x_axis, y: y_axis });
-            setCoinName("");
-
-        });
-
-    }catch(err){
-         setError(err.response.data.Error);
-            setErrorModalShow(true);
+        }
     }
-    }
+ 
     const getWeeklyPriceHistory = async () => {
-        try{
-        await Axios({
-            method: 'post',
-            url: 'http://localhost:5000/api/protected/vantage-api/getHistory',
-            headers: {
-                'Authorization': localStorage.getItem('jwt'),
-            },
-            data: {
-                "choice": "WEEKLY",
-                "currencyFrom": "BTC",
-                "currencyTo": "CAD"
-            }
-        }).then(res => {
-            // console.log(res.data);
-            const weeklySeries = res.data["Time Series (Digital Currency Weekly)"]
-            const series = Object.keys(weeklySeries).map(day => {
-                return { day: day, value: weeklySeries[day]["4a. close (CAD)"] }
+        try {
+            await Axios({
+                method: 'post',
+                url: 'http://localhost:5000/api/protected/vantage-api/getHistory',
+                headers: {
+                    'Authorization': localStorage.getItem('jwt'),
+                },
+                data: {
+                    "choice": "WEEKLY",
+                    "currencyFrom": searchItem,
+                    "currencyTo": "CAD"
+                }
+            }).then(res => {
+                // console.log(res.data);
+                const weeklySeries = res.data["Time Series (Digital Currency Weekly)"]
+                const series = Object.keys(weeklySeries).map(day => {
+                    return { day: day, value: weeklySeries[day]["4a. close (CAD)"] }
+                });
+                var x_axis = [];
+                var y_axis = [];
+                var weeks;
+                if (series.length < 100) {
+                    weeks = series.length;
+                } else {
+                    weeks = 100;
+                }
+                for (var index = 0; index < weeks; index++) {
+                    x_axis.push(series[index].day);
+                    y_axis.push(series[index].value)
+
+                }
+                x_axis.reverse();
+                y_axis.reverse();
+                setWeeklyHistory({ x: x_axis, y: y_axis });
+
+
+
             });
-            var x_axis = [];
-            var y_axis = [];
-            var weeks;
-            if(series.length<100){
-                weeks=series.length;
-            }else{
-                weeks=100;
-            }
-            for (var index = 0; index < weeks; index++) {
-                x_axis.push(series[index].day);
-                y_axis.push(series[index].value)
+        } catch (err) {
+            // setError(err.response.data.Error);
+            // setErrorModalShow(true);
+            resetGraphs(err);
 
-            }
-            setWeeklyHistory({ x: x_axis, y: y_axis });
-
-
-
-        });
-    }catch(err){
-         setError(err.response.data.Error);
-            setErrorModalShow(true);
-    }
+        }
     }
     const getMonthlyPriceHistory = async () => {
-        try{
-        await Axios({
-            method: 'post',
-            url: 'http://localhost:5000/api/protected/vantage-api/getHistory',
-            headers: {
-                'Authorization': localStorage.getItem('jwt'),
-            },
-            data: {
-                "choice": "MONTHLY",
-                "currencyFrom": coinName,
-                "currencyTo": "CAD"
-            }
-        }).then(res => {
-            console.log(res.data);
-            const monthlySeries = res.data["Time Series (Digital Currency Monthly)"]
-            const series = Object.keys(monthlySeries).map(day => {
-                return { day: day, value: monthlySeries[day]["4a. close (CAD)"] }
+        try {
+            await Axios({
+                method: 'post',
+                url: 'http://localhost:5000/api/protected/vantage-api/getHistory',
+                headers: {
+                    'Authorization': localStorage.getItem('jwt'),
+                },
+                data: {
+                    "choice": "MONTHLY",
+                    "currencyFrom": searchItem,
+                    "currencyTo": "CAD"
+                }
+            }).then(res => {
+                console.log(res.data);
+                const monthlySeries = res.data["Time Series (Digital Currency Monthly)"]
+                const series = Object.keys(monthlySeries).map(day => {
+                    return { day: day, value: monthlySeries[day]["4a. close (CAD)"] }
+                });
+                var x_axis = [];
+                var y_axis = [];
+                var months;
+                if (series.length < 100) {
+                    months = series.length;
+                } else {
+                    months = 100;
+                }
+                for (var index = 0; index < months; index++) {
+                    x_axis.push(series[index].day);
+                    y_axis.push(series[index].value)
+
+                }
+                x_axis.reverse();
+                y_axis.reverse();
+                setMonthlyHistory({ x: x_axis, y: y_axis });
+
+
+
             });
-            var x_axis = [];
-            var y_axis = [];
-            var months;
-            if(series.length<100){
-                months=series.length;
-            }else{
-                months=100;
-            }
-            for (var index = 0; index < months; index++) {
-                x_axis.push(series[index].day);
-                y_axis.push(series[index].value)
 
-            }
-            setMonthlyHistory({ x: x_axis, y: y_axis });
-
-
-
-        });
-
-    }catch(err){
-         setError(err.response.data.Error);
-            setErrorModalShow(true);
+        } catch (err) {
+            // setError(err.response.data.Error);
+            // setErrorModalShow(true);
+            resetGraphs(err);
+        }
     }
+    const resetGraphs=(err)=>{
+        setCoinName("Invalid Coin");
+        setWeeklyHistory({ x: [], y: [] });
+        setDailyHistory({ x: [], y: [] });
+        setMonthlyHistory({ x: [], y: [] });
+
+        setError(err.response.data.Error);
+        setErrorModalShow(true);
     }
     const onSubmit = async (e) => {
-        console.log("yeey");
         try {
             e.preventDefault();
             e.target.reset();
+            setCoinName(searchItem);
 
             console.log(coinName);
             getDailyPriceHistory();
             getWeeklyPriceHistory();
             getMonthlyPriceHistory();
 
-    setCoinName("");
+            setSearchItem("");
         } catch (err) {
             console.log("reach");
-            console.log(err.response.data.Error);
+            console.log(err);
             // setError(err.response.data.Error);
             // setModalShow(true);
         }
 
     }
-    const state = {
-        labels: dailyHistory.x,
-        datasets: [
-            {
-                label: 'Daily',
-                fill: false,
-                lineTension: 0,
-                backgroundColor: 'rgba(75,192,192,1)',
-                borderColor: 'rgba(0,0,0,1)',
-                borderWidth: 2,
-                data: dailyHistory.y
-            }
-        ]
-    }
+
+
 
     return (
 
-        <Container>      
-               <ErrorModal
-        show={errorModalShow}
-        onHide={() => setErrorModalShow(false)}
-        error={error}
-    />
+        <Container>
+            <ErrorModal
+                show={errorModalShow}
+                onHide={() => setErrorModalShow(false)}
+                error={error}
+            />
             <form onSubmit={onSubmit} className="form-search-coin-group">
 
                 <Row>
 
                     <Col xs={8}>
                         <div className="form-group">
-                            <input type="text" className="form-control" placeholder="Enter 3 letter symbol for a crypto-currency (eg. BTC)" onChange={(e) => setCoinName(e.target.value)} />
+                            <input type="text" className="form-control" placeholder="Enter 3 letter symbol for a crypto-currency (eg. BTC)" onChange={(e) => setSearchItem(e.target.value)} />
                         </div>
                     </Col>
                     <Col xs={4}>
-                        <Button className="text-uppercase search-btn" variant="dark" type="submit" disabled={coinName<=0}>Search</Button>
+                        <Button className="text-uppercase search-btn" variant="dark" type="submit" disabled={searchItem <= 0}>Search</Button>
                     </Col>
 
                 </Row>
-                </form>
+            </form>
+            <Row>
+                <Col>
+                </Col>
+                <Col>
+                </Col>
+            </Row>
+            <Row>
+                <Col xs={12} >
+                    {console.log(coinName+" trte")}
+                    <Line
+                        data={{
+                            labels: dailyHistory.x,
+                            datasets: [
+                                {
+                                    label: 'Daily',
+                                    fill: false,
+                                    lineTension: 0,
+                                    backgroundColor: 'rgba(75,192,192,1)',
+                                    borderColor: 'rgba(0,0,0,1)',
+                                    borderWidth: 2,
+                                    data: dailyHistory.y
+                                }
+                            ]
+                        }}
+                        options={{
+                            title: {
+                                display: true,
+                                text: coinName+' Daily price (past 100 days)',
+                                fontSize: 20
+                            },
+                            legend: {
+                                display: false,
 
-                <Row>
-                    <Col xs={12} md={12}>
-                        <Line
-                            data={{
-                                labels: dailyHistory.x,
-                                datasets: [
-                                    {
-                                        label: 'Daily',
-                                        fill: false,
-                                        lineTension: 0,
-                                        backgroundColor: 'rgba(75,192,192,1)',
-                                        borderColor: 'rgba(0,0,0,1)',
-                                        borderWidth: 2,
-                                        data: dailyHistory.y
-                                    }
-                                ]
-                            }}
-                            options={{
-                                title: {
-                                    display: true,
-                                    text: 'Daily price (past 100 days)',
-                                    fontSize: 20
-                                },
-                                legend: {
-                                    display: false,
+                            },
+                            responsive: true,
+                            maintainAspectRatio: false,
+                        }}
+                        width={600}
+                        height={600}
 
-                                },
-                                responsive: true,
-                                maintainAspectRatio: false,
-                            }}
-                            width={600}
-                            height={600}
-
-                        />
-                    </Col>
+                    />
+                </Col>
 
 
-                </Row>
-                <Row>
-                    <Col xs={12} md={12}>
-                        <Line
-                            data={{
-                                labels: weeklyHistory.x,
-                                datasets: [
-                                    {
-                                        label: 'Daily',
-                                        fill: false,
-                                        lineTension: 0,
-                                        backgroundColor: 'rgba(75,192,192,1)',
-                                        borderColor: 'rgba(0,0,0,1)',
-                                        borderWidth: 2,
-                                        data: weeklyHistory.y
-                                    }
-                                ]
-                            }}
-                            options={{
-                                title: {
-                                    display: true,
-                                    text: 'Weekly price (past 100 weeks)',
-                                    fontSize: 20
-                                },
-                                legend: {
-                                    display: false,
+            </Row>
+            <Row>
+                <Col xs={12} >
+                    <Line
+                        data={{
+                            labels: weeklyHistory.x,
+                            datasets: [
+                                {
+                                    label: 'Daily',
+                                    fill: false,
+                                    lineTension: 0,
+                                    backgroundColor: 'rgba(75,192,192,1)',
+                                    borderColor: 'rgba(0,0,0,1)',
+                                    borderWidth: 2,
+                                    data: weeklyHistory.y
+                                }
+                            ]
+                        }}
+                        options={{
+                            title: {
+                                display: true,
+                                text:  coinName+' Weekly price (past 100 weeks)',
+                                fontSize: 20
+                            },
+                            legend: {
+                                display: false,
 
-                                },
-                                responsive: true,
-                                maintainAspectRatio: false,
-                            }}
-                            width={600}
-                            height={600}
-                        />
-                    </Col>
-                </Row>
-                <Row>
-                    <Col xs={12} md={12}>
-                        <Line
-                            data={{
-                                labels: monthlyHistory.x,
-                                datasets: [
-                                    {
-                                        label: 'Daily',
-                                        fill: false,
-                                        lineTension: 0,
-                                        backgroundColor: 'rgba(75,192,192,1)',
-                                        borderColor: 'rgba(0,0,0,1)',
-                                        borderWidth: 2,
-                                        data: monthlyHistory.y
-                                    }
-                                ]
-                            }}
-                            options={{
-                                title: {
-                                    display: true,
-                                    text: 'Monthly price',
-                                    fontSize: 20
-                                },
-                                legend: {
-                                    display: false,
+                            },
+                            responsive: true,
+                            maintainAspectRatio: false,
+                        }}
+                        width={600}
+                        height={600}
+                    />
+                </Col>
+            </Row>
+            <Row>
+                <Col xs={12} >
+                    <Line
+                        data={{
+                            labels: monthlyHistory.x,
+                            datasets: [
+                                {
+                                    label: 'Daily',
+                                    fill: false,
+                                    lineTension: 0,
+                                    backgroundColor: 'rgba(75,192,192,1)',
+                                    borderColor: 'rgba(0,0,0,1)',
+                                    borderWidth: 2,
+                                    data: monthlyHistory.y
+                                }
+                            ]
+                        }}
+                        options={{
+                            title: {
+                                display: true,
+                                text:  coinName+' Monthly price',
+                                fontSize: 20
+                            },
+                            legend: {
+                                display: false,
 
-                                },
-                                responsive: true,
-                                maintainAspectRatio: false,
-                            }}
-                            width={600}
-                            height={600}
-                        />
-                    </Col>
-                </Row>
+                            },
+                            responsive: true,
+                            maintainAspectRatio: false,
+                        }}
+                        width={600}
+                        height={600}
+                    />
+                </Col>
+            </Row>
 
         </Container>
     );

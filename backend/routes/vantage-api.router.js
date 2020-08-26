@@ -6,14 +6,28 @@ const axios = require('axios');
 
 
 
-router.post('/getExchangeRate', async (req, res) => {
-    const currencyFrom=req.body.currencyFrom;
-    const currencyToConvertTo=req.body.currencyToConvertTo;
+// router.post('/getExchangeRate', async (req, res) => {
+//     const currencyFrom=req.body.currencyFrom;
+//     const currencyToConvertTo=req.body.currencyToConvertTo;
  
-  const apiRes = await axios.get('https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency='+currencyFrom+'&to_currency='+currencyToConvertTo+'&apikey='+process.env.API_KEY)
-    .then(res => { return res });
+//   const apiRes = await axios.get('https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency='+currencyFrom+'&to_currency='+currencyToConvertTo+'&apikey='+process.env.VANTAGE_KEY)
+//     .then(res => { return res });
 
-  return res.json(apiRes.data);
+//   return res.json(apiRes.data);
+
+// });
+
+
+
+router.post('/getExchangeRate', async (req, res) => {
+  const currencyFrom=req.body.currencyFrom;
+  const currencyTo=req.body.currencyToConvertTo;
+  const amount=req.body.amount;
+
+const apiRes = await axios.get('http://api.coinlayer.com/api/convert?access_key='+process.env.COINLAYER_KEY+'&from='+currencyFrom+'&to='+currencyTo+'&amount='+amount)
+  .then(res => { return res });
+
+return res.json(apiRes.data);
 
 });
 
@@ -21,7 +35,7 @@ router.post('/getCryptoRating', async (req, res) => {
     const currencyName=req.body.currencyName;
 
  
-  const apiRes = await axios.get('https://www.alphavantage.co/query?function=CRYPTO_RATING&symbol='+currencyName+'&apikey='+process.env.API_KEY)
+  const apiRes = await axios.get('https://www.alphavantage.co/query?function=CRYPTO_RATING&symbol='+currencyName+'&apikey='+process.env.VANTAGE_KEY)
     .then(res => { return res });
 
   return res.json(apiRes.data);
@@ -39,11 +53,14 @@ router.post('/getHistory', async (req, res) => {
   // if (cacheTime && cacheTimeDifference < 300000) {
   //   return res.json(cachedData);
   // }
-    const apiRes= await axios.get('https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_'+choice+'&symbol='+currencyFrom+'&market='+currencyTo+'&apikey='+process.env.API_KEY)
+    const apiRes= await axios.get('https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_'+choice+'&symbol='+currencyFrom+'&market='+currencyTo+'&apikey='+process.env.VANTAGE_KEY)
     .then(res => { return res });
     if(apiRes.data.Note){
       return res.status(429).json({ Error: "Too many requests, slow down (one search a minute)"});
 
+    }
+    if(apiRes.data["Error Message"]){
+      return res.status(422).json({ Error: "Invalid ISO currency code"});
     }
   cachedData = apiRes.data;
   cacheTime = Date.now();
