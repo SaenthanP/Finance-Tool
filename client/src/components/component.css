@@ -1,0 +1,96 @@
+div.container-fluid{
+ 
+    padding: 0;
+    text-align: center;
+   }
+ 
+   .signin-card{
+    text-align: left;
+    margin:auto; 
+   width:30rem;
+   border: 0;
+   border-radius: .5rem;
+   box-shadow: 5px 6px 13px 0px rgba(0,0,0,0.75);
+   margin-top: 5rem;
+ }
+.expense-input-card{
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    text-align: left;
+ 
+   border: 0;
+   border-radius: .5rem;
+   box-shadow: 5px 6px 13px 0px rgba(0,0,0,0.75);
+}
+.sort-drop-down{
+    margin-bottom: 1rem;
+}
+.networth-chart{
+    margin-top: 3.5rem;
+}
+.currency-search,.search-btn{
+    margin-top:2rem;
+}
+.health-index-card,.conversion-input-card{
+    /* text-align: left; */
+
+    border: 0;
+    border-radius: .5rem;
+    box-shadow: 5px 6px 13px 0px rgba(0,0,0,0.75);
+}
+.health-index-card{
+    padding-bottom: 0.4rem;
+}
+.conversion-input-card{
+    margin-top:0rem
+}
+.amount-to-convert.input-group{
+    margin-bottom: 0rem!important;
+}
+
+.healthIndexDescription{
+        text-align: left;
+
+}
+.history-chart{
+   margin-top: 2rem;
+}
+.month-chart.history-chart{
+    margin-bottom: 2rem;
+}
+#edit-button,#delete-button{
+    /* margin: auto; */
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    background-color: black;
+    border: none;
+}
+#edit-button:hover,#delete-button:hover,.swap-button:hover,.search-btn:hover {
+
+
+    transition-timing-function: ease-out;
+  
+    transition: 0.25s;
+  
+      transform: scale(1.1) perspective(0.5px)
+    }
+
+/* canvas{
+
+    width:1000px !important;
+    height:600px !important;
+  
+  } */
+
+  @media(max-width:700px){
+     
+      .conversion-input-card{
+          margin-top:1rem;
+      }
+    .health-index-card{
+        margin-top:1.5rem;
+    }
+    #delete-button{
+        margin-top:0.5rem;
+    }
+  }
