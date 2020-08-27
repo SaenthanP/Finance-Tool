@@ -9,7 +9,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { Line } from 'react-chartjs-2';
 import ErrorModal from '../components/error-modal.component';
 
-import { Container, Dropdown, ButtonGroup, DropdownButton, Button, Col, Row, Table,InputGroup,FormControl } from 'react-bootstrap';
+import { Container, Dropdown, ButtonGroup, DropdownButton, Button, Col, Row, Table, InputGroup, FormControl } from 'react-bootstrap';
 
 export default function CryptoDashboard() {
     const [searchItem, setSearchItem] = useState("");
@@ -23,6 +23,10 @@ export default function CryptoDashboard() {
     const [exchangeRate, setExchangeRate] = useState();
     const [healthIndex, setHealthIndex] = useState({ fcasRating: "N/A", fcasScore: "N/A", developerScore: "N/A", utilityScore: "N/A", marketMaturityScore: "N/A" });
 
+const[amountToConvert,setAmountToConvert]=useState({currency:coinName,amount:0});
+const[convertedAmount,setConvertedAmount]=useState({currency:"CAD",amount:0});
+const[cryptoAmount,setCryptoAmount]=useState(0);
+const[cadAmount,setCadAmount]=useState(0);
     useEffect(() => {
 
         const checkLoggedIn = async () => {
@@ -140,7 +144,7 @@ export default function CryptoDashboard() {
         } catch (err) {
             // setError(err.response.data.Error);
             // setErrorModalShow(true);
-            resetGraphs(err);
+            // resetGraphs(err);
 
         }
     }
@@ -187,13 +191,13 @@ export default function CryptoDashboard() {
         } catch (err) {
             // setError(err.response.data.Error);
             // setErrorModalShow(true);
-            resetGraphs(err);
+            // resetGraphs(err);
         }
     }
     const resetGraphs = (err) => {
         setCoinName("Invalid Coin");
 
-
+// console.log(err.response.data.Error+" in reset");
         setError(err.response.data.Error);
         setErrorModalShow(true);
 
@@ -201,6 +205,11 @@ export default function CryptoDashboard() {
 
         setWeeklyHistory({ x: [], y: [] });
         setMonthlyHistory({ x: [], y: [] });
+        setAmountToConvert({amount:0});
+        setConvertedAmount({amount:0,currency:"CAD"});
+
+        setCryptoAmount(0);
+        setCadAmount(0);
     }
 
 
@@ -225,9 +234,11 @@ export default function CryptoDashboard() {
             });
 
         } catch (err) {
+            // console.log(err.response.data.Error+" in health");
+
             // setError(err.response.data.Error);
             // setErrorModalShow(true);
-            resetGraphs(err);
+            // resetGraphs(err);
         }
     }
     const getExchangeRate = async () => {
@@ -248,16 +259,18 @@ export default function CryptoDashboard() {
             });
 
         } catch (err) {
+            console.log(err.response.data.Error+" in exchange");
             // setError(err.response.data.Error);
             // setErrorModalShow(true);
-            resetGraphs(err);
+            // resetGraphs(err);
         }
     }
     const onSubmit = async (e) => {
         try {
+            setCoinName(searchItem);
+            setAmountToConvert({currency:searchItem});
             e.preventDefault();
             e.target.reset();
-            setCoinName(searchItem);
 
             console.log(coinName);
             getDailyPriceHistory();
@@ -274,8 +287,29 @@ export default function CryptoDashboard() {
         }
 
     }
+const swapConversion=()=>{
+    console.log("REACHHHHHHHHHH in swap");
 
+    var amountToSwap=amountToConvert;
+   setAmountToConvert({currency:convertedAmount.currency,amount:0});
+   setConvertedAmount({currency:amountToSwap.currency,amount:0});
 
+}
+const convertCurrency=()=>{
+   
+    console.log("REACHHHHHHHHHH");
+    // setAmountToConvert({amount:amountToConvert,currency:amountToConvert.currency});
+
+    if(convertedAmount.currency==="CAD"){
+        setConvertedAmount({amount:exchangeRate*amountToConvert.amount,currency:convertedAmount.currency});
+    }else{
+        console.log("REACHHHHHHHHHH in else");
+
+        setConvertedAmount({amount:amountToConvert.amount/exchangeRate,currency:convertedAmount.currency});
+
+    }
+
+}
 
     return (
 
@@ -305,7 +339,7 @@ export default function CryptoDashboard() {
                     <div className="card converter-input-card">
                         <div className="card-body">
                             <h5 className="card-title text-center">Currency Conversion</h5>
-                            <form onSubmit={onSubmit} className="form-signin">
+                            <form className="form-signin">
                                 <Row>
                                     <Col xs={12} md={5}>
                                         <InputGroup className="mb-3">
@@ -313,24 +347,34 @@ export default function CryptoDashboard() {
                                                 placeholder="Amount"
                                                 aria-label="Amount"
                                                 aria-describedby="Amount"
+
+                                                onChange={(e) => setAmountToConvert({amount:e.target.value,currency:amountToConvert.currency})} 
+                                                
+                                                type="number"
+                                                step="any" 
+                                                min="0"
                                             />
-                                            <InputGroup.Append>
-                                                <InputGroup.Text id="Amount">BTC</InputGroup.Text>
+                                            <InputGroup.Append >
+                                                <InputGroup.Text id="Amount" >{amountToConvert.currency}</InputGroup.Text>
                                             </InputGroup.Append>
                                         </InputGroup>
                                     </Col>
                                     <Col xs={12} md={2}>
-                            <Button><img src="https://www.pngrepo.com/png/55685/180/transfer-arrows.png" width="30px"></img></Button>
+                                        <Button type="button" onClick={swapConversion}><img src="https://www.pngrepo.com/png/55685/180/transfer-arrows.png" width="30px"></img></Button>
                                     </Col>
                                     <Col xs={12} md={5}>
                                         <InputGroup className="mb-3">
                                             <FormControl
-                                                placeholder="Amount"
+                                                // placeholder="Amount"
                                                 aria-label="Amount"
                                                 aria-describedby="Amount"
+                                                value={convertedAmount.amount||0}
+                                                readOnly
+                                                step="any"
+                                           
                                             />
                                             <InputGroup.Append>
-                                                <InputGroup.Text id="Amount">CAD</InputGroup.Text>
+                                                <InputGroup.Text id="Amount">{convertedAmount.currency}</InputGroup.Text>
                                             </InputGroup.Append>
                                         </InputGroup>
                                     </Col>
@@ -339,7 +383,7 @@ export default function CryptoDashboard() {
 
 
 
-                                <button className="btn btn-lg btn-primary btn-block text-uppercase input-expense-btn" type="submit">Submit</button>
+                                <button className="btn btn-lg btn-primary btn-block text-uppercase input-expense-btn" type="button" onClick={convertCurrency} disabled={!coinName||coinName==="Invalid Coin"}>Convert</button>
 
                             </form>
                         </div>

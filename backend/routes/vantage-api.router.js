@@ -7,7 +7,16 @@ router.post('/getExchangeRate', async (req, res) => {
  
   const apiRes = await axios.get('https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency='+currencyFrom+'&to_currency='+currencyTo+'&apikey='+process.env.VANTAGE_KEY)
     .then(res => { return res });
+    console.log(apiRes.data['Error Message']);
+    if(apiRes.data.Note){
+      return res.status(429).json({ Error: "Too many requests, slow down (one search a minute)"});
 
+    }
+    
+    if(apiRes.data["Error Message"]){
+      console.log("reach into invalid")
+      return res.status(422).json({ Error: "Invalid ISO currency code"});
+    }
   return res.json(apiRes.data);
 
 });
