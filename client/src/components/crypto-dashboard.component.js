@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Switch, Redirect, history } from "react-router-dom";
 
 import '../App.css';
 import Axios from 'axios';
 import '../components/component.css';
-import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { Line } from 'react-chartjs-2';
 import ErrorModal from '../components/error-modal.component';
 
-import { Container, Dropdown, ButtonGroup, DropdownButton, Button, Col, Row, Table, InputGroup, FormControl } from 'react-bootstrap';
+import { Container,  Button, Col, Row, InputGroup, FormControl } from 'react-bootstrap';
 
 export default function CryptoDashboard() {
     const [searchItem, setSearchItem] = useState("");
@@ -25,8 +23,7 @@ export default function CryptoDashboard() {
 
     const [amountToConvert, setAmountToConvert] = useState({ currency: coinName, amount: 0 });
     const [convertedAmount, setConvertedAmount] = useState({ currency: "CAD", amount: 0 });
-    const [cryptoAmount, setCryptoAmount] = useState(0);
-    const [cadAmount, setCadAmount] = useState(0);
+    
     useEffect(() => {
 
         const checkLoggedIn = async () => {
@@ -208,8 +205,7 @@ export default function CryptoDashboard() {
         setAmountToConvert({ amount: 0 });
         setConvertedAmount({ amount: 0, currency: "CAD" });
 
-        setCryptoAmount(0);
-        setCadAmount(0);
+      
     }
 
 
@@ -360,7 +356,7 @@ export default function CryptoDashboard() {
                                         </InputGroup>
                                     </Col>
                                     <Col xs={12} >
-                                        <Button type="button" className="swap-button" onClick={swapConversion}><img src="https://www.pngrepo.com/png/55685/180/transfer-arrows.png" width="30px"></img></Button>
+                                        <Button type="button" className="swap-button" onClick={swapConversion}><img alt="swap icon" src="https://www.pngrepo.com/png/55685/180/transfer-arrows.png" width="30px"></img></Button>
                                     </Col>
                                     <Col xs={12} >
                                         <InputGroup className="mb-3">

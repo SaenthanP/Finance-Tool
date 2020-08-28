@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Switch, Redirect, history } from "react-router-dom";
 
 import '../App.css';
 import Axios from 'axios';
@@ -9,7 +8,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import ErrorModal from '../components/error-modal.component';
 import EditModal from '../components/edit-modal.component';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrashAlt,faEdit } from '@fortawesome/free-solid-svg-icons'
+import { faTrashAlt, faEdit } from '@fortawesome/free-solid-svg-icons'
 
 import { Doughnut } from 'react-chartjs-2';
 
@@ -28,10 +27,8 @@ export default function ExpenseTracker() {
     const [editModalShow, setEditModalShow] = useState(false);
 
     const [errorModalShow, setErrorModalShow] = useState(false);
-    const [expense, setExpense] = useState(0);
-    const [income, setIncome] = useState(0);
+ 
     const[transactionToEdit,setTransactionToEdit]=useState([]);
-
     useEffect(() => {
 
         const checkLoggedIn = async () => {

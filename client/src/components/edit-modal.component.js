@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import '../components/component.css';
-import { Modal, Button, Alert } from 'react-bootstrap';
-import { Container, Dropdown, ButtonGroup, DropdownButton, Col, Row, Table } from 'react-bootstrap';
+import { Modal, Button} from 'react-bootstrap';
+import {  Dropdown, ButtonGroup, DropdownButton} from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
-import moment from 'react-moment';
 import Axios from 'axios';
 import ErrorModal from './error-modal.component';
 export default function EditModal(props) {
@@ -21,9 +20,6 @@ export default function EditModal(props) {
         setTransactionDate(props.transaction.transactionDate);
         setTransactionAmount(props.transaction.transactionAmount);
         setTransactionType(props.transaction.transactionType);
-
-
-
     }, [props.transaction]);
 
     const onSubmit = async (e) => {

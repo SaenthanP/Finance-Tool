@@ -37,18 +37,13 @@ router.post('/getCryptoRating', async (req, res) => {
   return res.json(apiRes.data);
 
 });
-var cachedData;
-var cacheTime;
+
 router.post('/getHistory', async (req, res) => {
     const choice=req.body.choice;
 
     const currencyFrom=req.body.currencyFrom;
     const currencyTo=req.body.currencyTo;
 
-  var cacheTimeDifference = Date.now() - cacheTime;
-  // if (cacheTime && cacheTimeDifference < 300000) {
-  //   return res.json(cachedData);
-  // }
     const apiRes= await axios.get('https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_'+choice+'&symbol='+currencyFrom+'&market='+currencyTo+'&apikey='+process.env.VANTAGE_KEY)
     .then(res => { return res });
     if(apiRes.data.Note){
@@ -58,8 +53,7 @@ router.post('/getHistory', async (req, res) => {
     if(apiRes.data["Error Message"]){
       return res.status(422).json({ Error: "Invalid ISO currency code"});
     }
-  cachedData = apiRes.data;
-  cacheTime = Date.now();
+ 
 
   return res.json(apiRes.data);
 
