@@ -24,8 +24,8 @@ Used the Passportjs JWT strategy for authentication
 Transactions are visualized using chartjs
 ![Transaction Input Demo](demo/input-transactions.gif)
 
-### Edit Transaction Demo
-![Edit Transaction Demo](demo/edit-transactions.gif)
+### Edit/Delete Transaction Demo
+![Edit/Delete Transaction Demo](demo/edit-transactions.gif)
 
 ### Crypto Currency Dashboard Demo
 Coin data is from the [Alpha Vantage API](https://www.alphavantage.co/)
