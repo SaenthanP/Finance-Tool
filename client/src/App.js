@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import Axios from 'axios';
 import './App.css';
 import Navbar from "./components/navbar.component";
@@ -35,7 +35,6 @@ useEffect(() => {
 }
 checkLoggedIn();
 
-  // setLoggedIn(localStorage.getItem('jwt'));
 
 }, []);
   return (

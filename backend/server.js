@@ -18,7 +18,7 @@ app.use(passport.initialize());
 require('./config/passport')(passport);
 
 const uri=process.env.ATLAS_URI;
-mongoose.connect(uri,{useNewUrlParser:true, useUnifiedTopology:true });
+mongoose.connect(uri,{useNewUrlParser:true, useUnifiedTopology:true ,useFindAndModify: false });
 const connection=mongoose.connection;
 connection.once('open',()=>{
     console.log("Mongo database connection established successfully");

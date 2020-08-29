@@ -48,20 +48,19 @@ router.delete('/deleteTransaction/:id', async (req, res) => {
 
 
 
-router.put('/editTransaction', async (req, res) => {
-  let { transactionTitle, transactionType, transactionAmount, transactionDate, _id } = req.body;
+router.put('/editTransaction/:id', async (req, res) => {
+  let { transactionTitle, transactionType, transactionAmount, transactionDate } = req.body;
   if (!transactionTitle || !transactionType || !transactionAmount || !transactionDate) {
     return res.status(400).json({ Error: "Not all fields have been entered" });
   }
-  
-  await Transaction.updateOne({
-    _id: _id, transactionTitle,
-    transactionType,
-    transactionAmount,
-    transactionDate
-  })
+  // console.log(_id+" "+transactionTitle+" "+transactionAmount+" "+transactionDate+" "+transactionType);
+
+  await Transaction.findByIdAndUpdate({_id: req.params.id}, req.body
+    
+  )
     .then(transaction => res.json(transaction))
     .catch(err => res.status(400).json({ Error: err }));
+
 });
 
 module.exports = router;

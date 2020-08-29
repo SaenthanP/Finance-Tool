@@ -356,7 +356,7 @@ export default function CryptoDashboard() {
                                         </InputGroup>
                                     </Col>
                                     <Col xs={12} >
-                                        <Button type="button" className="swap-button" onClick={swapConversion}><img alt="swap icon" src="https://www.pngrepo.com/png/55685/180/transfer-arrows.png" width="30px"></img></Button>
+                                        <Button type="button" className="swap-button" onClick={swapConversion}><img alt="" src="https://www.pngrepo.com/png/55685/180/transfer-arrows.png" width="30px"></img></Button>
                                     </Col>
                                     <Col xs={12} >
                                         <InputGroup className="mb-3">

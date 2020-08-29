@@ -187,7 +187,7 @@ export default function ExpenseTracker() {
                     <td  >{props.transaction.transactionType}</td>
                     <td  >{amount}</td>
                     <td  >{props.transaction.transactionDate.substring(0,10)}</td>
-        <td className="test"><Button id="edit-button" onClick={()=>editTransaction(props.transaction)}><FontAwesomeIcon icon={faEdit} /></Button><Button id="delete-button" onClick={()=>deletetransaction(props.transaction._id)}><FontAwesomeIcon icon={faTrashAlt} /></Button> </td>
+        <td  className="test"><Button id="edit-button" onClick={()=>editTransaction(props.transaction)}><FontAwesomeIcon icon={faEdit} /></Button><Button id="delete-button" onClick={()=>deletetransaction(props.transaction._id)}><FontAwesomeIcon icon={faTrashAlt} /></Button> </td>
 
 
 

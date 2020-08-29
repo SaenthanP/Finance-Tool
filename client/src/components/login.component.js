@@ -47,9 +47,7 @@ export default function Login() {
             const loginRes = await Axios.post("http://localhost:5000/api/users/login", loginUser);
 
             localStorage.setItem('jwt', loginRes.data.token);
-            console.log(loginRes.data.payload);
-
-            console.log(loginRes.data.token);
+           
             window.location = '/app';
         } catch (err) {
             setError(err.response.data.Error);

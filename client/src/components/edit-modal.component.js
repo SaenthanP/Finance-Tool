@@ -28,23 +28,24 @@ export default function EditModal(props) {
             e.target.reset();
             await Axios({
                 method: 'put',
-                url: 'http://localhost:5000/api/protected/income/editTransaction',
+                url: 'http://localhost:5000/api/protected/income/editTransaction/'+props.transaction._id,
                 headers: {
                     'Authorization': localStorage.getItem('jwt'),
                 },
                 data: {
                     transactionTitle,
-                    transactionAmount,
-                    transactionDate,
                     transactionType,
-                    _id: props.transaction._id
+                    transactionAmount,
+                    transactionDate
                 }
             }).then(res => {
+                console.log(res.data);
                 props.onHide();
             });
         } catch (err) {
-            setError(err.response.data.Error);
-            setErrorModalShow(true);
+
+            // setError(err.response.data.Error);
+            // setErrorModalShow(true);
         }
     }
     const onChangeDate = (date) => {
@@ -107,7 +108,7 @@ export default function EditModal(props) {
 
 
 
-                            <button className="btn btn-lg btn-primary btn-block text-uppercase input-expense-btn" type="submit">Submit</button>
+                            <button className="btn btn-lg btn-primary btn-block text-uppercase input-expense-btn" type="submit">Confirm</button>
 
                         </form>
                     </div>

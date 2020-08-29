@@ -4,10 +4,20 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
 
-router.get('/isAuthenticated',passport.authenticate('jwt', {session: false}),(req,res)=>{
+router.get('/isAuthenticated', passport.authenticate('jwt', { session: false }), (req, res) => {
 
     return res.status(200).json(true);
-    });
+});
+router.get('/test', (req, res) => {
+    if (req.isAuthenticated()) {
+        return res.status(200).json(true);
+
+    }
+    else {
+        return res.status(200).json(false);
+
+    }
+});
 
 router.post('/login', async (req, res) => {
     try {
