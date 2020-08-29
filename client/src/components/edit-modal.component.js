@@ -44,8 +44,8 @@ export default function EditModal(props) {
             });
         } catch (err) {
 
-            // setError(err.response.data.Error);
-            // setErrorModalShow(true);
+            setError(err.response.data.Error);
+            setErrorModalShow(true);
         }
     }
     const onChangeDate = (date) => {
