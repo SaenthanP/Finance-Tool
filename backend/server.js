@@ -24,9 +24,7 @@ connection.once('open',()=>{
     console.log("Mongo database connection established successfully");
 });
 
-/*
-Only put ,passport.authenticate('jwt',{session:false}) for routes that have to be secured
-*/
+
 const usersRouter=require('./routes/users');
 app.use('/api/users',usersRouter);
 
@@ -41,4 +39,4 @@ app.listen(port,()=>{
     console.log('Server is running on port: '+port);
 });
 
-//https://stackoverflow.com/questions/36623007/node-js-passport-checking-if-the-user-had-already-logged-in
+
